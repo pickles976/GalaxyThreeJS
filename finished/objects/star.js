@@ -1,9 +1,9 @@
 import * as THREE from 'three'
-import { BLOOM_LAYER, STAR_MAX, STAR_MIN } from './config/renderConfig.js'
-import { starTypes } from './config/starDistributions.js'
+import { BLOOM_LAYER, STAR_MAX, STAR_MIN } from '../config/renderConfig.js'
+import { starTypes } from '../config/starDistributions.js'
+import { clamp } from '../utils.js'
 
-const texture = new THREE.TextureLoader().load('./resources/sprite120.png')
-// const material = new THREE.SpriteMaterial({map: texture, color: "#ffffff"})
+const texture = new THREE.TextureLoader().load('../resources/sprite120.png')
 const materials = starTypes.color.map((color) => new THREE.SpriteMaterial({map: texture, color: color}))
 
 export class Star {
@@ -31,19 +31,19 @@ export class Star {
 
         // update star size
         let starSize = dist * starTypes.size[this.starType]
-        starSize = Math.min(Math.max(STAR_MIN, starSize), STAR_MAX)
+        starSize = clamp(starSize, STAR_MIN, STAR_MAX)
         this.obj?.scale.copy(new THREE.Vector3(starSize, starSize, starSize))
     }
 
     toThreeObject(scene) {
-        let star = new THREE.Sprite(materials[this.starType])
-        star.layers.set(BLOOM_LAYER)
+        let sprite = new THREE.Sprite(materials[this.starType])
+        sprite.layers.set(BLOOM_LAYER)
         
-        star.scale.multiplyScalar(starTypes.size[this.starType])
-        star.position.copy(this.position)
+        sprite.scale.multiplyScalar(starTypes.size[this.starType])
+        sprite.position.copy(this.position)
 
-        this.obj = star
+        this.obj = sprite
 
-        scene.add(star)
+        scene.add(sprite)
     }
 }

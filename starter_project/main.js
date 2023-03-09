@@ -12,9 +12,6 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { Star } from './star.js';
-import { CORE_X_DIST, CORE_Y_DIST, GALAXY_THICKNESS, NUM_STARS } from './config/galaxyConfig.js';
-import { gaussianRandom } from './utils.js';
 
 let canvas, renderer, camera, scene, orbit, baseComposer, bloomComposer, overlayComposer
 
@@ -128,10 +125,6 @@ async function render() {
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
 
-    stars.forEach((star) => {
-        star.updateScale(camera)
-    })
-
     // Run each pass of the render pipeline
     renderPipeline()
 
@@ -159,13 +152,9 @@ initThree()
 let axes = new THREE.AxesHelper(5.0)
 scene.add(axes)
 
-let stars = []
+const gridHelper = new THREE.GridHelper( 100, 50 );
+gridHelper.rotateX(Math.PI / 2)
+scene.add( gridHelper );
 
-for ( let i = 0; i < NUM_STARS; i++){
-    let pos = new THREE.Vector3(gaussianRandom(0, CORE_X_DIST), gaussianRandom(0, CORE_Y_DIST), gaussianRandom(0, GALAXY_THICKNESS))
-    let star = new Star(pos)
-    star.toThreeObject(scene)
-    stars.push(star)
-}
 
 requestAnimationFrame(render)
